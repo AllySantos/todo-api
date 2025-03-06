@@ -31,3 +31,10 @@ class User:
 
     def __str__(self):
         return f'{self.id} | Name: {self.name} E-mail: {self.email}'
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email
+        }
