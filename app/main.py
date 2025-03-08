@@ -4,4 +4,5 @@ from repositories.user_repository import UserRepository
 alicia = User(name='Alicia', email='teste@teste.com')
 
 repository = UserRepository()
-repository.add(alicia)
+user_add = repository.add(alicia)
+print(user_add)

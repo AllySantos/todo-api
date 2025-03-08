@@ -1,6 +1,5 @@
 from database.config import supabase
 from models.user import User
-import random
 
 class UserRepository:
 
@@ -9,10 +8,12 @@ class UserRepository:
 
     def add(self, user : User):
         user = user.to_dict()
-        user['id'] = random.randint(0,10)
+
         response = (
             supabase.table(self.table_name)
-            .insert(user, default_to_null=True)
+            .insert(user)
             .execute()
         )
-        print(response)
+        response_data = response.data[0]
+        return User(response_data['id'], response_data['name'], response_data['email'])
+
