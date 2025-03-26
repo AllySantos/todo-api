@@ -1,9 +1,10 @@
 
 class User:
-    def __init__(self, id = None, name = None, email = None):
+    def __init__(self, id = None, name = None, email = None, password = None):
         self.__id = id
         self.__name = name
         self.__email = email
+        self.__password = password
 
     @property
     def name(self):
@@ -28,6 +29,14 @@ class User:
     @id.setter
     def id(self, id):
         self.__id = id
+
+    @property
+    def password(self):
+        return self.__password
+
+    @password.setter
+    def password(self, password):
+        self.__password = password
 
     def __str__(self):
         return f'{self.id} | Name: {self.name} E-mail: {self.email}'

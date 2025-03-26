@@ -1,19 +1,33 @@
 from database.config import supabase
-from models.user import User
+from utils import parser
 
 class UserRepository:
 
     def __init__(self):
         self.table_name = 'user'
 
-    def add(self, user : User):
-        user = user.to_dict()
-
+    def get_user_by_email(self, user_email):
         response = (
             supabase.table(self.table_name)
-            .insert(user)
+            .select('*')
+            .limit(1)
+            .eq('email', user_email)
+            .execute()
+        )
+
+        user = None
+        if len(response.data) > 0:
+            response_data = response.data[0]
+            user = parser.parse_user(response_data)
+        return user
+
+    def add(self, user_data):
+        response = (
+            supabase.table(self.table_name)
+            .insert(user_data)
             .execute()
         )
         response_data = response.data[0]
-        return User(response_data['id'], response_data['name'], response_data['email'])
 
+        user = parser.parse_user(response_data)
+        return user
