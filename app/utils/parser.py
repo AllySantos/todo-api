@@ -2,7 +2,6 @@ from models.user import User
 
 def parse_user(object):
 
-
     user_name = object['name']
     user_email = object['email']
     user_password = object['password']
