@@ -1,6 +1,4 @@
 from database.config import supabase
-from utils import parser
-from security import token
 
 class SessionRepository:
 
