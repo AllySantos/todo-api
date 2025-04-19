@@ -6,7 +6,7 @@ from exceptions.bussiness_exceptions import *
 bp_user = Blueprint('user', __name__)
 service = UserService()
 
-@bp_user.route('/', methods=['POST'])
+@bp_user.route('/register', methods=['POST'])
 def create_user():
     payload = request.get_json()
     try:
@@ -16,7 +16,7 @@ def create_user():
         return jsonify({"error": e.message}), 400
 
     except Exception as e:
-        return str(e), 400
+        return jsonify({"error": str(e)}), 400
 
 
 

@@ -3,7 +3,7 @@ from database.config import supabase
 class SessionRepository:
 
     def __init__(self):
-        self.table_name = 'Session'
+        self.table_name = 'session'
 
     def get_session_by_token(self, token):
         response = (

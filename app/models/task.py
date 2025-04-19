@@ -1,5 +1,5 @@
-from ..enums.task_status_enum import TaskStatus
-from user import User
+from enums.task_status_enum import TaskStatus
+from models.user import User
 
 class Task:
     def __init__(self, id = None, title = None, description = None, user = User(), status = TaskStatus.TODO):
@@ -38,9 +38,23 @@ class Task:
         return self.__user
 
     @user.setter
-    def title(self, user):
+    def user(self, user):
         self.__user = user
 
     @property
     def id(self):
         return self.__id
+
+    @id.setter
+    def id(self, value):
+        self.__id = value
+
+    def to_dict(self):
+
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'status': self.status.name,
+            'user': self.user.name
+        }

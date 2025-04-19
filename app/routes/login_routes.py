@@ -16,7 +16,7 @@ def login_user():
         return jsonify({"error": e.message}), 404
 
     except Exception as e:
-        return str(e), 400
+        return jsonify({"error": str(e)}), 400
 
 
 

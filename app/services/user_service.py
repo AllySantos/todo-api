@@ -13,77 +13,78 @@ validate_user_payload = {
     'register': ['name', 'email', 'password']
 }
 
-class UserService():
+class UserService:
 
     def __init__(self):
         pass
 
-    def create_new_user(self, object):
+    def create_new_user(self, payload):
 
         action = 'register'
-        user_is_valid = self.user_is_valid(object, action)  # Ensure function is called correctly
+        user_is_valid = self.user_is_valid(payload, action)  # Ensure function is called correctly
 
         if user_is_valid is False:
             raise Exception("User payload isn't valid")
 
-        user_exists = user_repo.get_user_by_email(object['email'])
+        user_exists = user_repo.get_user_by_email(payload['email'])
 
         if user_exists is not None:
             raise UserAlreadyExists()
 
         # Hash password
-        object = self.set_hashed_password(object)
+        payload = self.set_hashed_password(payload)
 
         # Create user in database
-        user_repo.add(user_data=object)
+        user = user_repo.add(user_data=payload)
 
         # Create token
-        token = self.create_new_token()
+        token = self.create_new_token(user.id)
 
         return token
 
 
-    def login_user(self, object):
+    def login_user(self, payload):
 
         action = 'login'
-        user_is_valid = self.user_is_valid(object, action)  # Ensure function is called correctly
+        user_is_valid = self.user_is_valid(payload, action)  # Ensure function is called correctly
 
         if user_is_valid is False:
             raise Exception("User payload isn't valid")
 
-        object = self.set_hashed_password(object)
+        payload = self.set_hashed_password(payload)
 
         # Try login user
-        logged_user = user_repo.get_user_by_email_and_password(object['email'], object['password'])
+        logged_user = user_repo.get_user_by_email_and_password(payload['email'], payload['password'])
 
         if logged_user is None:
             raise UserNotFound()
 
-        token = self.create_new_token()
+        token = self.create_new_token(logged_user.id)
 
         return token
 
-
-    def set_hashed_password(self, object):
-        original_password = object['password']
+    @staticmethod
+    def set_hashed_password(payload):
+        original_password = payload['password']
         hashed_password = hash.hash_object(original_password)
 
-        object['password'] = hashed_password
-        return object
+        payload['password'] = hashed_password
+        return payload
 
-    def create_new_token(self):
-        new_session = token.create_token()
+    @staticmethod
+    def create_new_token(user_id):
+        new_session = token.create_token(user_id)
         created_session = session_repo.add(new_session)
         created_token = created_session['token']
 
         return {'token': created_token}
 
-
-    def user_is_valid(self, object, action):
+    @staticmethod
+    def user_is_valid(payload, action):
         required_keys = validate_user_payload[action]
 
         for key in required_keys:
-            if key not in object:
+            if key not in payload:
                 return False
         return True
 

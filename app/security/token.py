@@ -8,13 +8,14 @@ token_lenght = 30
 expiration_minutes = 30
 
 
-def create_token():
+def create_token(user_id):
     token = ''.join(random.choices(string.ascii_letters, k=token_lenght))
     expiration_datetime = get_expiration_datetime()
 
     token_dict = dict()
     token_dict['token'] = token
-    token_dict['expiration_date'] = expiration_datetime
+    token_dict['expiration_datetime'] = expiration_datetime
+    token_dict['user_id'] = user_id
     return token_dict
 
 

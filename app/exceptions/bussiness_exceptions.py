@@ -8,3 +8,9 @@ class UserNotFound(Exception):
     def __init__(self, message = "User not found"):
         self.message = message
         super().__init__(self.message)
+
+
+class TokenExpirated(Exception):
+    def __init__(self, message = "Token has already expirated"):
+        self.message = message
+        super().__init__(self.message)

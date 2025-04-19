@@ -6,6 +6,21 @@ class UserRepository:
     def __init__(self):
         self.table_name = 'user'
 
+    def get_user_by_id(self, user_id):
+        response = (
+            supabase.table(self.table_name)
+            .select('*')
+            .limit(1)
+            .eq('id', user_id)
+            .execute()
+        )
+
+        user = None
+        if len(response.data) > 0:
+            response_data = response.data[0]
+            user = parser.parse_user(response_data)
+        return user
+
     def get_user_by_email(self, user_email):
         response = (
             supabase.table(self.table_name)
