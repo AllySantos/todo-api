@@ -45,6 +45,8 @@ class TaskService:
         # Inserir o status padrão
         payload['status'] = TaskStatus.TODO.value
         task = task_repo.add(payload)
+
+        # Atuatilizar o objeto user
         task.user = user
 
         payload_task = task.to_dict()
