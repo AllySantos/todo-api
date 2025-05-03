@@ -18,7 +18,7 @@ def parse_user(payload):
 def parse_task(payload):
 
     status = TaskStatus(payload['status'])
-    user = User(id=payload['id'])
+    user = User(id=payload['user_id'])
 
     task = Task(
         title=payload['title'],
