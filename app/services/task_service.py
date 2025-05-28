@@ -23,6 +23,9 @@ class TaskService:
     def __init__(self):
         pass
 
+    def delete_task(self, task_id, token_value):
+        pass
+
     def update_task(self, payload, task_id, token_value):
         keys_to_validate = validate_task_payload['update']
 
@@ -30,16 +33,10 @@ class TaskService:
             raise KeyError(f'Invalid payload, expected for {' or '.join(keys_to_validate)} in payload')
 
         # Buscar a existencia do Token
-        token = session_repo.get_session_by_token(token_value)
-        is_token_active = self.is_token_active(token)
-        if not is_token_active:
-            raise TokenExpirated()
+        token = self._get_token(token_value)
 
         # Buscar o usuário referente aquele token
-        user_id = token['user_id']
-        user = user_repo.get_user_by_id(user_id)
-        if user is None:
-            raise UserNotFound()
+        user = self._get_user_by_token(token)
 
         # Valida o ID da task e o user dono da task
         task = task_repo.get_task_by_id(task_id)
@@ -57,24 +54,14 @@ class TaskService:
 
     def create_new_task(self, payload, token_value):
 
-        action = 'register'
-
         # Buscar a existencia do Token
-        token = session_repo.get_session_by_token(token_value)
-        is_token_active = self.is_token_active(token)
-
-        if not is_token_active:
-            raise TokenExpirated()
+        token = self._get_token(token_value)
 
         # Buscar o usuário referente aquele token
-        user_id = token['user_id']
-        user = user_repo.get_user_by_id(user_id)
-
-        if user is None:
-            raise UserNotFound()
+        user = self._get_user_by_token(token)
 
         # Inserir o usuário junto da task
-        payload['user_id'] = user_id
+        payload['user_id'] = user.id
 
         # Inserir o status padrão
         payload['status'] = TaskStatus.TODO.value
@@ -86,6 +73,23 @@ class TaskService:
         payload_task = task.to_dict()
 
         return payload_task
+
+
+    def _get_user_by_token(self, token):
+        user_id = token['user_id']
+        user = user_repo.get_user_by_id(user_id)
+        if user is None:
+            raise UserNotFound()
+
+        return user
+
+    def _get_token(self, token_value):
+        token = session_repo.get_session_by_token(token_value)
+        is_token_active = self.is_token_active(token)
+        if not is_token_active:
+            raise TokenExpirated()
+
+        return token
 
 
     @staticmethod
