@@ -24,7 +24,30 @@ class TaskService:
         pass
 
     def delete_task(self, task_id, token_value):
-        pass
+        # Buscar a existencia do Token
+        token = self._get_token(token_value)
+
+        # Buscar o usuário referente aquele token
+        user = self._get_user_by_token(token)
+
+        # Valida o ID da task e o user dono da task
+        task = task_repo.get_task_by_id(task_id)
+
+        if task is None:
+            raise TaskNotFound()
+
+        if task.user.id != user.id:
+            raise UnauthorizedUser()
+
+        is_task_deleted = task_repo.delete(task.id)
+
+        if not is_task_deleted:
+            raise BaseException('Delete was unsuccessful, try again later')
+
+        task.user = user
+        task_payload = task.to_dict()
+        return task_payload
+
 
     def update_task(self, payload, task_id, token_value):
         keys_to_validate = validate_task_payload['update']
@@ -43,11 +66,12 @@ class TaskService:
         if task is None:
             raise TaskNotFound()
 
-        if task.user.id != token['id']:
+        if task.user.id != user.id:
             raise UnauthorizedUser()
 
         # Atualiza os campos da task
         task = task_repo.update(task_data=payload, task_id=task_id)
+        task.user = user
 
         payload_task = task.to_dict()
         return payload_task
@@ -90,7 +114,6 @@ class TaskService:
             raise TokenExpirated()
 
         return token
-
 
     @staticmethod
     def is_token_active(token):

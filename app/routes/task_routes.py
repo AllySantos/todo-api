@@ -30,6 +30,8 @@ def __call_service(callable, **kwargs):
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+
+
 @bp_todo.route('/', methods=['POST'])
 def create_task():
     payload = request.get_json()
@@ -48,3 +50,10 @@ def update_task(id):
 
     return __call_service(callable, payload=payload, task_id=id, token_value=token)
 
+@bp_todo.route('/<id>', methods=['DELETE'])
+def delete_task(id):
+
+    token = request.headers.get('Authorization')
+
+    callable = service.delete_task
+    return __call_service(callable, task_id=id, token_value=token)

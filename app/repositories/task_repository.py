@@ -15,7 +15,7 @@ class TaskRepository:
             .execute()
         )
 
-        deleted_rows = len(response['data'])
+        deleted_rows = len(response.data)
 
         return deleted_rows > 0
 
