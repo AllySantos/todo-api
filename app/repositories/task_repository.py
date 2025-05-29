@@ -6,6 +6,23 @@ class TaskRepository:
     def __init__(self):
         self.table_name = 'task'
 
+
+    def get_tasks_by_user(self, user_id):
+
+        response = (
+            supabase.table(self.table_name)
+            .select('*')
+            .eq('user_id', user_id)
+            .execute()
+        )
+
+        tasks = None
+        if len(response.data) > 0:
+            response_data = response.data
+            tasks = [parser.parse_task(task) for task in response_data]
+
+        return tasks
+
     def delete(self, task_id):
 
         response = (

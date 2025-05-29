@@ -1,10 +1,10 @@
 import json
 
+from aiohttp import InvalidURL
 from flask import request, Blueprint, jsonify
 from postgrest import APIError
 
 from services.task_service import TaskService
-from services.user_service import UserService
 from exceptions.bussiness_exceptions import *
 
 bp_todo = Blueprint('todo', __name__)
@@ -57,3 +57,17 @@ def delete_task(id):
 
     callable = service.delete_task
     return __call_service(callable, task_id=id, token_value=token)
+
+@bp_todo.route('/', methods=['GET'])
+def get_tasks():
+    token = request.headers.get('Authorization')
+    limit = request.args.get('limit')
+    page = request.args.get('page')
+
+    if limit is None or page is None:
+        return jsonify({"error": 'Please provide limit and page query params'}), 500
+
+
+    callable = service.get_tasks
+    return __call_service(callable, token_value=token, limit=limit, page=page)
+

@@ -23,6 +23,36 @@ class TaskService:
     def __init__(self):
         pass
 
+    def get_tasks(self, token_value, limit, page):
+
+        limit = int(limit)
+        page = int(page)
+
+        # Buscar a existencia do Token
+        token = self._get_token(token_value)
+
+        # Buscar o usuário referente aquele token
+        user = self._get_user_by_token(token)
+
+        tasks = task_repo.get_tasks_by_user(user.id)
+
+        tasks_payload_data = [task.to_short_dict() for task in tasks]
+
+        # Pagination
+        start_index = ((page - 1) * limit)  if page > 1 else 0
+        end_index = start_index + limit
+
+        # Validate index according to array limits
+        start_index = start_index if len(tasks_payload_data) > start_index else len(tasks_payload_data)
+        end_index = end_index if len(tasks_payload_data) > end_index else len(tasks_payload_data)
+
+        paginated_payload = tasks_payload_data[start_index:end_index]
+
+
+        payload_tasks = {'data': paginated_payload, 'page': page, 'limit': limit, 'total': len(paginated_payload)}
+        return payload_tasks
+
+
     def delete_task(self, task_id, token_value):
         # Buscar a existencia do Token
         token = self._get_token(token_value)

@@ -49,6 +49,14 @@ class Task:
     def id(self, value):
         self.__id = value
 
+
+    def to_short_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description
+        }
+
     def to_dict(self):
 
         return {
